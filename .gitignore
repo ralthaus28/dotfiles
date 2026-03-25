@@ -1,1 +1,9 @@
+# tmux
 .tmux/plugins/
+
+# Neovim
+nvim/.undo/
+nvim/.backup/
+nvim/.swap/
+nvim/.shada/
+nvim/lazy-lock.json
