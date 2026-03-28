@@ -1,5 +1,7 @@
 vim.cmd("let g:netrw_banner = 0")
 
+vim.opt.clipboard = "unnamedplus"
+
 vim.opt.guicursor = ""
 vim.opt.nu = true
 vim.opt.relativenumber = true
