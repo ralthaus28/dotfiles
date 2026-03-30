@@ -71,11 +71,12 @@ local function find_class_end(bufnr)
     return #lines
 end
 
--- Check if a method already exists in the buffer
+-- Check if a method declaration already exists in the buffer
+-- Matches: public <type> methodName( — avoids false positives from call sites
 local function method_exists(bufnr, method_name)
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
     for _, line in ipairs(lines) do
-        if line:find(method_name .. "%(") then
+        if line:match("%f[%w]public%s+%S+%s+" .. method_name .. "%s*%(") then
             return true
         end
     end
