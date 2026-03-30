@@ -50,9 +50,15 @@ local function make_setter(field, indent)
     return lines
 end
 
--- Detect indentation of the class body
-local function detect_indent(bufnr)
+-- Detect indentation from the field line itself
+local function detect_indent(bufnr, field_line)
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+    -- Use the field's own indentation
+    if field_line then
+        local indent = lines[field_line]:match("^(%s+)%S")
+        if indent then return indent end
+    end
+    -- Fallback: first indented line in file
     for _, line in ipairs(lines) do
         local indent = line:match("^(%s+)%S")
         if indent then return indent end
@@ -60,12 +66,17 @@ local function detect_indent(bufnr)
     return "    "
 end
 
--- Find the closing brace of the class (last `}` in file)
-local function find_class_end(bufnr)
+-- Find the closing brace of the class containing `from_line` (1-indexed)
+local function find_class_end(bufnr, from_line)
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-    for i = #lines, 1, -1 do
-        if lines[i]:match("^}") or lines[i]:match("^%s*}") then
-            return i
+    local depth = 0
+    -- Walk forward from the field line to find the enclosing class end
+    for i = from_line, #lines do
+        local line = lines[i]
+        for _ in line:gmatch("{") do depth = depth + 1 end
+        for _ in line:gmatch("}") do
+            depth = depth - 1
+            if depth < 0 then return i end
         end
     end
     return #lines
@@ -100,8 +111,8 @@ function M.generate(opts)
         end_line   = cur[1]
     end
 
-    local indent = detect_indent(bufnr)
-    local insert_at = find_class_end(bufnr)
+    local indent = detect_indent(bufnr, start_line)
+    local insert_at = find_class_end(bufnr, start_line)
 
     local new_lines = { "" } -- blank line before methods
     local generated = 0
