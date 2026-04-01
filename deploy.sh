@@ -3,6 +3,20 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 
+echo "→ Checking for JetBrains Mono Nerd Font..."
+if fc-list | grep -qi "JetBrainsMono Nerd"; then
+    echo "✓ Already installed"
+else
+    FONT_DIR="$HOME/.local/share/fonts/JetBrainsMono"
+    mkdir -p "$FONT_DIR"
+    curl -fLo "$FONT_DIR/JetBrainsMono.tar.xz" \
+        https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz
+    tar -xf "$FONT_DIR/JetBrainsMono.tar.xz" -C "$FONT_DIR"
+    rm "$FONT_DIR/JetBrainsMono.tar.xz"
+    fc-cache -fv "$FONT_DIR" &>/dev/null
+    echo "✓ JetBrains Mono Nerd Font installed"
+fi
+
 echo "→ Initializing submodules..."
 git -C "$SCRIPT_DIR" submodule update --init
 echo "✓ submodules"
