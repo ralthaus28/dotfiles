@@ -69,3 +69,19 @@ vim.keymap.set("n", "<leader>r", function()
   vim.cmd("startinsert")
 end, { desc = "Compile and run main.c" })
 
+vim.keymap.set("n", "<leader>ra", function()
+  local dir = vim.fn.expand("%:p:h")
+
+  vim.ui.input({ prompt = "Arguments: " }, function(args)
+    if args == nil then
+      return
+    end
+
+    vim.cmd("botright 15split")
+    vim.cmd("terminal cd " .. vim.fn.shellescape(dir) ..
+      " && gcc main.c -o main && ./main " .. args)
+
+    vim.cmd("startinsert")
+  end)
+end, { desc = "Compile and run main.c with arguments" })
+
