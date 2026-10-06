@@ -59,3 +59,13 @@ vim.keymap.set("n", "<leader>fh", function()
   vim.api.nvim_buf_set_lines(0, 0, 0, false, header)
 end, { desc = "Insert file header" })
 
+vim.keymap.set("n", "<leader>r", function()
+  local dir = vim.fn.expand("%:p:h")
+
+  vim.cmd("botright 15split")
+  vim.cmd("terminal cd " .. vim.fn.shellescape(dir) ..
+    " && gcc main.c -o main && ./main")
+
+  vim.cmd("startinsert")
+end, { desc = "Compile and run main.c" })
+
